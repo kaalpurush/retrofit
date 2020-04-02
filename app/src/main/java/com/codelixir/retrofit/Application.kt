@@ -5,7 +5,7 @@ import android.content.Context
 class Application : android.app.Application() {
 
     companion object {
-        var context: Context? = null
+        lateinit var context: Context
             private set
     }
 

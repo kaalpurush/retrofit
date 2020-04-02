@@ -13,7 +13,7 @@ object RetrofitClient {
         val cache = Cache(Application.context!!.getCacheDir(), cacheSize)
 
         val okHttpClient = OkHttpClient.Builder().run {
-            cache(cache)
+            //cache(cache)
             build()
         }
 

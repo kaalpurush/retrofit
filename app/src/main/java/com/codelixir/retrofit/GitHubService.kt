@@ -6,8 +6,8 @@ import retrofit2.http.Path
 
 interface GitHubService {
     @GET("/users/{user}/repos")
-    suspend fun retrieveRepositories(@Path("user") user: String): List<GitHubRepositories>
+    suspend fun retrieveRepositories(@Path("user") user: String): List<GitHubData>
 
     @GET("/users/{user}/repos")
-    suspend fun retrieveRepositoriesResponse(@Path("user") user: String): Response<List<GitHubRepositories>>
+    suspend fun retrieveRepositoriesResponse(@Path("user") user: String): Response<List<GitHubData>>
 }
