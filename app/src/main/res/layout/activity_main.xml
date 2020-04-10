@@ -11,13 +11,25 @@
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:text="Hello World!"
+        android:tooltipText="viewModel"
+        tools:targetApi="o" />
 
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:text="Hello World!"
+        android:tooltipText="viewModel:shared"
+        tools:targetApi="o" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello World!"
+        android:tooltipText="coroutine"
+        tools:targetApi="o" />
 
     <Button
         android:id="@+id/btnRefresh"
@@ -31,4 +43,9 @@
         android:layout_height="wrap_content"
         android:text="No Refresh" />
 
+    <Button
+        android:id="@+id/btnKill"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Kill" />
 </LinearLayout>

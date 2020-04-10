@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.codelixir.retrofit.databinding.ActivityMainBinding
+import kotlinx.coroutines.*
+import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,9 +29,17 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.getSharedRepositories(intent.getBooleanExtra("refresh", false))
             .observe(this, Observer {
-                println("Api:viewModel: $it")
+                println("Api:viewModel:sharedData: $it")
                 binding.textView2.text = it.size.toString()
             })
+
+        CoroutineScope(Dispatchers.Main).launch {
+            val it = withContext(Dispatchers.IO) {
+                GitHubDataRepository.fetchRepositories()
+            }
+            println("Api:coroutine: $it")
+            binding.textView3.text = it?.size.toString()
+        }
 
         binding.btnRefresh.setOnClickListener {
             startActivity(
@@ -47,6 +57,12 @@ class MainActivity : AppCompatActivity() {
                     MainActivity::class.java
                 ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("refresh", false)
             )
+        }
+
+        binding.btnKill.setOnClickListener {
+            finish()
+            moveTaskToBack(true)
+            System.exit(0)
         }
     }
 

@@ -10,27 +10,28 @@ class GitHubViewModel(application: Application) : AndroidViewModel(application) 
     private var data: LiveData<List<GitHubData>>
 
     init {
-        data = fetchRepositories()
-    }
-
-    fun fetchRepositories(): LiveData<List<GitHubData>> {
-        return liveData {
-            val service = RetrofitClient.get().create(GitHubService::class.java)
-            try {
-                var ret = service.retrieveRepositories("kaalpurush")
-                emit(ret)
-            } catch (e: Exception) {
+        data = liveData {
+            GitHubDataRepository.fetchRepositories()?.let {
+                emit(it)
             }
         }
     }
 
     fun getRepositories(refresh: Boolean = false): LiveData<List<GitHubData>> {
         if (refresh)
-            data = fetchRepositories()
+            data = liveData {
+                GitHubDataRepository.fetchRepositories()?.let {
+                    emit(it)
+                }
+            }
         return data
     }
 
     fun getSharedRepositories(refresh: Boolean = false): LiveData<List<GitHubData>> {
-        return GitHubDataRepository.getRepositories(refresh)
+        return liveData {
+            GitHubDataRepository.getRepositories(refresh)?.let {
+                emit(it)
+            }
+        }
     }
 }
