@@ -5,9 +5,11 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.codelixir.retrofit.databinding.ActivityMainBinding
-import kotlinx.coroutines.*
-import java.lang.Exception
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
@@ -33,7 +35,7 @@ class MainActivity : AppCompatActivity() {
                 binding.textView2.text = it.size.toString()
             })
 
-        CoroutineScope(Dispatchers.Main).launch {
+        lifecycleScope.launch(Dispatchers.Main) {
             val it = withContext(Dispatchers.IO) {
                 GitHubDataRepository.fetchRepositories()
             }
