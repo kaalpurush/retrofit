@@ -1,37 +1,23 @@
 package com.codelixir.retrofit.data
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 
-class GitHubViewModel(application: Application) : AndroidViewModel(application) {
+class GitHubViewModel(application: Application) : BaseViewModel(application) {
 
-    private var data: LiveData<List<GitHubEntity>>
+    fun getRepositoriesWithFallback(): LiveData<Resource<List<GitHubEntity>?>> =
+        callApi(
+            apiRequest = { GitHubDataRepository.fetchRepositories() },
+            dbFetchFunc = { GitHubDataRepository.fetchRepositoriesFromDB() },
+            dbInsertFunc = { list -> GitHubDataRepository.insertRepositories(list) }
+        )
 
-    init {
-        data = liveData {
-            GitHubDataRepository.fetchRepositories()?.let {
-                emit(it)
-            }
+
+    fun getRepositories(): LiveData<Resource<List<GitHubEntity>>> =
+        liveData {
+            emit(Resource.loading<List<GitHubEntity>>(null))
+            GitHubDataRepository.fetchRepositories().apply { emit(Resource.data(this)) }
         }
-    }
 
-    fun getRepositories(refresh: Boolean = false): LiveData<List<GitHubEntity>> {
-        if (refresh)
-            data = liveData {
-                GitHubDataRepository.fetchRepositories()?.let {
-                    emit(it)
-                }
-            }
-        return data
-    }
-
-    fun getSharedRepositories(refresh: Boolean = false): LiveData<List<GitHubEntity>> {
-        return liveData {
-            GitHubDataRepository.getRepositories(refresh)?.let {
-                emit(it)
-            }
-        }
-    }
 }

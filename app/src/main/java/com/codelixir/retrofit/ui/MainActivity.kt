@@ -7,7 +7,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.codelixir.retrofit.data.GitHubViewModel
+import com.codelixir.retrofit.data.Resource
 import com.codelixir.retrofit.databinding.ActivityMainBinding
+import com.codelixir.retrofit.util.show
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,46 +23,18 @@ class MainActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this).get(GitHubViewModel::class.java)
 
-        viewModel.getRepositories(intent.getBooleanExtra("refresh", false))
-            .observe(this, Observer {
-                println("Api:viewModel: $it")
-                binding.textView1.text = it.size.toString()
-
-                val adapter = GitHubDataListAdapter()
-                binding.rvList.layoutManager = LinearLayoutManager(this)
-                binding.rvList.adapter = adapter
-                adapter.submitList(it)
-            })
-
-/*        viewModel.getSharedRepositories(intent.getBooleanExtra("refresh", false))
-            .observe(this, Observer {
-                println("Api:viewModel:sharedData: $it")
-                binding.textView2.text = it.size.toString()
-            })
-
-        lifecycleScope.launch(Dispatchers.Main) {
-            val it = withContext(Dispatchers.IO) {
-                GitHubDataRepository.fetchRepositories()
-            }
-            println("Api:coroutine: $it")
-            binding.textView3.text = it?.size.toString()
-        }*/
+        //refreshData()
 
         binding.btnRefresh.setOnClickListener {
-            startActivity(
-                Intent(
-                    this,
-                    MainActivity::class.java
-                ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("refresh", true)
-            )
+            refreshData()
         }
 
-        binding.btnNoRefresh.setOnClickListener {
+        binding.btnNew.setOnClickListener {
             startActivity(
                 Intent(
                     this,
                     MainActivity::class.java
-                ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("refresh", false)
+                )
             )
         }
 
@@ -69,6 +43,25 @@ class MainActivity : AppCompatActivity() {
             moveTaskToBack(true)
             System.exit(0)
         }
+    }
+
+    private fun refreshData() {
+        viewModel.getRepositoriesWithFallback()
+            .observe(this, Observer { out ->
+                binding.progressBar.show(out.status == Resource.Status.LOADING)
+
+                if (out.status == Resource.Status.SUCCESS) {
+                    out.data?.let {
+                        println("Api:viewModel: $it")
+                        binding.textView1.text = it.size.toString()
+
+                        val adapter = GitHubDataListAdapter()
+                        binding.rvList.layoutManager = LinearLayoutManager(this)
+                        binding.rvList.adapter = adapter
+                        adapter.submitList(it)
+                    }
+                }
+            })
     }
 
 }

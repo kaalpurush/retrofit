@@ -5,38 +5,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:padding="16dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="40dp"
+        android:minHeight="40dp"
+        android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvList"
-        tools:listitem="@layout/row_github_data"
         android:layout_width="match_parent"
-        android:layout_height="200dp" />
+        android:layout_height="200dp"
+        tools:listitem="@layout/row_github_data" />
 
     <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        android:tooltipText="viewModel"
-        tools:targetApi="o" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        android:tooltipText="viewModel:shared"
-        tools:targetApi="o" />
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        android:tooltipText="coroutine"
-        tools:targetApi="o" />
+        android:text="Hello World!" />
 
     <Button
         android:id="@+id/btnRefresh"
@@ -45,10 +35,10 @@
         android:text="Refresh" />
 
     <Button
-        android:id="@+id/btnNoRefresh"
+        android:id="@+id/btnNew"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="No Refresh" />
+        android:text="New" />
 
     <Button
         android:id="@+id/btnKill"

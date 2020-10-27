@@ -10,9 +10,10 @@ import com.codelixir.retrofit.data.GitHubEntity
 import com.codelixir.retrofit.R
 import com.codelixir.retrofit.databinding.RowGithubDataBinding
 
-class GitHubDataListAdapter : ListAdapter<GitHubEntity, GitHubDataListAdapterViewHolder>(
-    GitHubDataDiffUtil()
-) {
+class GitHubDataListAdapter :
+    ListAdapter<GitHubEntity, GitHubDataListAdapter.GitHubDataListAdapterViewHolder>(
+        GitHubDataDiffCallback
+    ) {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -29,18 +30,18 @@ class GitHubDataListAdapter : ListAdapter<GitHubEntity, GitHubDataListAdapterVie
             tvUrl.text = item.url
         }
     }
-}
 
-class GitHubDataDiffUtil : DiffUtil.ItemCallback<GitHubEntity>() {
-    override fun areItemsTheSame(oldItem: GitHubEntity, newItem: GitHubEntity): Boolean {
-        return oldItem.id == newItem.id
+    inner class GitHubDataListAdapterViewHolder(v: View) : RecyclerView.ViewHolder(v) {
+        val binding: RowGithubDataBinding = RowGithubDataBinding.bind(v)
     }
 
-    override fun areContentsTheSame(oldItem: GitHubEntity, newItem: GitHubEntity): Boolean {
-        return oldItem.id == newItem.id
+    object GitHubDataDiffCallback : DiffUtil.ItemCallback<GitHubEntity>() {
+        override fun areItemsTheSame(oldItem: GitHubEntity, newItem: GitHubEntity) =
+            oldItem.id == newItem.id
+
+        override fun areContentsTheSame(oldItem: GitHubEntity, newItem: GitHubEntity) =
+            oldItem == newItem
     }
 }
 
-class GitHubDataListAdapterViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-    val binding: RowGithubDataBinding = RowGithubDataBinding.bind(v)
-}
+
