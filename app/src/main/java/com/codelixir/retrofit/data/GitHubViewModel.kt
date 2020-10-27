@@ -1,4 +1,4 @@
-package com.codelixir.retrofit
+package com.codelixir.retrofit.data
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel

@@ -1,15 +1,13 @@
-package com.codelixir.retrofit
+package com.codelixir.retrofit.ui
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.codelixir.retrofit.data.GitHubViewModel
 import com.codelixir.retrofit.databinding.ActivityMainBinding
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,9 +25,14 @@ class MainActivity : AppCompatActivity() {
             .observe(this, Observer {
                 println("Api:viewModel: $it")
                 binding.textView1.text = it.size.toString()
+
+                val adapter = GitHubDataListAdapter()
+                binding.rvList.layoutManager = LinearLayoutManager(this)
+                binding.rvList.adapter = adapter
+                adapter.submitList(it)
             })
 
-        viewModel.getSharedRepositories(intent.getBooleanExtra("refresh", false))
+/*        viewModel.getSharedRepositories(intent.getBooleanExtra("refresh", false))
             .observe(this, Observer {
                 println("Api:viewModel:sharedData: $it")
                 binding.textView2.text = it.size.toString()
@@ -41,7 +44,7 @@ class MainActivity : AppCompatActivity() {
             }
             println("Api:coroutine: $it")
             binding.textView3.text = it?.size.toString()
-        }
+        }*/
 
         binding.btnRefresh.setOnClickListener {
             startActivity(
