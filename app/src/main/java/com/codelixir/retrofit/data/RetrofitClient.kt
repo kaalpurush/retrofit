@@ -1,5 +1,6 @@
-package com.codelixir.retrofit
+package com.codelixir.retrofit.data
 
+import com.codelixir.retrofit.Application
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -21,11 +22,16 @@ object RetrofitClient {
             client(okHttpClient)
             baseUrl("https://api.github.com/")
             addConverterFactory(MoshiConverterFactory.create())
+            //addConverterFactory(GsonConverterFactory.create())
             build()
         }
     }
 
     fun get(): Retrofit {
         return client
+    }
+
+    inline fun <reified T> createCaller(): T {
+        return get().create(T::class.java)
     }
 }

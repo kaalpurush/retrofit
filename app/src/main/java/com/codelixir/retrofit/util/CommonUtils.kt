@@ -8,13 +8,17 @@ import android.graphics.Canvas
 import android.location.Address
 import android.location.Geocoder
 import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.net.NetworkInfo
 import android.net.Uri
+import android.os.Build
 import android.text.TextUtils
 import android.text.format.DateUtils
 import android.view.*
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.LayoutRes
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.text.HtmlCompat
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
@@ -132,7 +136,8 @@ fun TextView.setTextOrHide(text: String?) {
     }
 }
 
-fun toast(context: Context, text: String?) = Toast.makeText(context, "$text", Toast.LENGTH_SHORT).show()
+fun toast(context: Context, text: String?) =
+    Toast.makeText(context, "$text", Toast.LENGTH_SHORT).show()
 
 fun Date.calculateAge(): String =
     ((Date().time - this.time) / DateUtils.DAY_IN_MILLIS / 365).toString()
@@ -178,7 +183,11 @@ fun getAddressFromLatLong(context: Context, lat: Double, long: Double): Address?
     val geocoder = Geocoder(context, Locale.getDefault())
 
     try {
-        addresses = geocoder.getFromLocation(lat, long, 1) // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+        addresses = geocoder.getFromLocation(
+            lat,
+            long,
+            1
+        ) // Here 1 represent max location result to returned, by documents it recommended 1 to 5
         return addresses.firstOrNull()
     } catch (e: Exception) {
         e.printStackTrace()
@@ -201,3 +210,38 @@ fun String.removeWhitespaces(): String {
     //we will round up the distance value by 2 decimal points for getting a better result
     return (NumberFormat.getInstance().parse(formatted).toFloat() * 100).roundToInt()
 }*/
+
+inline fun <reified T> runIfConnected(context: Context, task: () -> T) {
+    if (hasInternet(context))
+        task.invoke()
+}
+
+fun hasInternet(context: Context): Boolean {
+    var result = false
+    val connectivityManager =
+        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        val networkCapabilities = connectivityManager.activeNetwork ?: return false
+        val actNw =
+            connectivityManager.getNetworkCapabilities(networkCapabilities) ?: return false
+        result = when {
+            actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+            actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+            actNw.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+            else -> false
+        }
+    } else {
+        connectivityManager.run {
+            connectivityManager.activeNetworkInfo?.run {
+                result = when (type) {
+                    ConnectivityManager.TYPE_WIFI -> true
+                    ConnectivityManager.TYPE_MOBILE -> true
+                    ConnectivityManager.TYPE_ETHERNET -> true
+                    else -> false
+                }
+
+            }
+        }
+    }
+    return result
+}
