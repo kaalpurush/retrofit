@@ -42,8 +42,7 @@ object GitHubDataRepository {
         if (!refresh && data !== null)
             return data
 
-        data = fetchRepositories()
-        return data
+        return fetchRepositories()
     }
 
     suspend fun getRepository(name: String): GitHubEntity? {

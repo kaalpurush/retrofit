@@ -8,15 +8,17 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.media.RingtoneManager
 import android.os.Build
-import androidx.annotation.RequiresApi
 import com.codelixir.retrofit.R
+import androidx.core.app.NotificationCompat.Builder
 
 internal object NotificationUtils {
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun sendNotification(context: Context, title: String?, text: String?) {
+    fun sendNotification(context: Context, title: String, text: String) {
         val channelName = context.getString(R.string.app_name)
         val channelId = channelName.removeWhitespaces()
-        val builder: Notification.Builder = Notification.Builder(context, channelName)
+        val builder = Builder(context, channelName)
+        val mNotificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
         builder.setSmallIcon(R.drawable.ic_launcher_background)
             .setLargeIcon(
                 BitmapFactory.decodeResource(
@@ -24,7 +26,8 @@ internal object NotificationUtils {
                     R.drawable.ic_launcher_background
                 )
             )
-            .setColor(context.resources.getColor(R.color.colorAccent))
+            .setColorized(true)
+            .setColor(context.getColor(R.color.colorAccent))
             .setLights(Color.RED, 3000, 3000)
             .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
             .setVibrate(longArrayOf(1000, 1000, 1000, 1000, 1000))
@@ -33,22 +36,21 @@ internal object NotificationUtils {
             .setContentText(text)
             .setAutoCancel(true)
             .apply {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    setColorized(true)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    setPriority(NotificationManager.IMPORTANCE_HIGH)
                 }
             }
-
-        val mNotificationManager =
-            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        // Android O requires a Notification Channel.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val mChannel =
-                NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH)
-            mChannel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
-            mNotificationManager.createNotificationChannel(mChannel)
-            builder.setChannelId(channelId)
-        }
+            .apply {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    NotificationChannel(
+                        channelId, channelName, NotificationManager.IMPORTANCE_HIGH
+                    ).also { channel ->
+                        channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+                        mNotificationManager.createNotificationChannel(channel)
+                    }
+                    setChannelId(channelId)
+                }
+            }
 
         // Issue the notification
         mNotificationManager.notify(0, builder.build())

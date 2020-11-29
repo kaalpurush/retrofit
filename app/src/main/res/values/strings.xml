@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Retrofit Kotlin</string>
+    <string name="notification_channel_id">General</string>
+    <string name="notification_channel_name">General</string>
 </resources>

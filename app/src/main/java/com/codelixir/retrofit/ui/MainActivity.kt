@@ -2,10 +2,12 @@ package com.codelixir.retrofit.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.codelixir.retrofit.Application
 import com.codelixir.retrofit.data.GitHubViewModel
 import com.codelixir.retrofit.data.Resource
 import com.codelixir.retrofit.databinding.ActivityMainBinding
@@ -24,6 +26,10 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this).get(GitHubViewModel::class.java)
 
         //refreshData()
+
+        val count = Application.getSetting("worker", 0)
+        //Application.saveSetting("worker", count + 1)
+        Toast.makeText(this, "$count", Toast.LENGTH_LONG).show()
 
         binding.btnRefresh.setOnClickListener {
             refreshData()

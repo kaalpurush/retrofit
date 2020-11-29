@@ -17,16 +17,13 @@ abstract class AppDatabase : RoomDatabase() {
 
         @JvmStatic
         fun getInstance(context: Context): AppDatabase {
-            if (dbInstance == null) {
-                dbInstance = Room.databaseBuilder(
-                    context.applicationContext,
-                    AppDatabase::class.java,
-                    "app.db"
-                )
-                    .fallbackToDestructiveMigration() //we want to destroy all the tables if migration fails
-                    .build()
-            }
-            return dbInstance!!
+            return dbInstance ?: Room.databaseBuilder(
+                context.applicationContext,
+                AppDatabase::class.java,
+                "app.db"
+            )
+                .fallbackToDestructiveMigration() //we want to destroy all the tables if migration fails
+                .build()
         }
     }
 
