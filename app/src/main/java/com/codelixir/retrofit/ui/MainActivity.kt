@@ -6,14 +6,20 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.codelixir.retrofit.Application
+import com.codelixir.retrofit.NavGraphDirections
+import com.codelixir.retrofit.R
 import com.codelixir.retrofit.data.GitHubViewModel
 import com.codelixir.retrofit.data.Resource
 import com.codelixir.retrofit.databinding.ActivityMainBinding
 import com.codelixir.retrofit.util.show
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: GitHubViewModel
@@ -22,17 +28,20 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.toolbar.setupWithNavController(getNavController())
 
         viewModel = ViewModelProvider(this).get(GitHubViewModel::class.java)
 
-        //refreshData()
-
         val count = Application.getSetting("worker", 0)
-        //Application.saveSetting("worker", count + 1)
-        Toast.makeText(this, "$count", Toast.LENGTH_LONG).show()
+
+        Toast.makeText(this, "Worker Run Count: $count", Toast.LENGTH_LONG).show()
 
         binding.btnRefresh.setOnClickListener {
             refreshData()
+        }
+
+        binding.btnBlank.setOnClickListener {
+            navigateTo(NavGraphDirections.actionToGlobalBlank("Blank from Activity"))
         }
 
         binding.btnNew.setOnClickListener {
@@ -49,25 +58,22 @@ class MainActivity : AppCompatActivity() {
             moveTaskToBack(true)
             System.exit(0)
         }
+
+        val graph = getNavController().navInflater.inflate(R.navigation.nav_graph)
+        getNavController().graph = graph
     }
 
     private fun refreshData() {
-        viewModel.getRepositoriesWithFallback()
+        viewModel.getSharedRepositories()
             .observe(this, Observer { out ->
-                binding.progressBar.show(out.status == Resource.Status.LOADING)
-
                 if (out.status == Resource.Status.SUCCESS) {
                     out.data?.let {
-                        println("Api:viewModel: $it")
-                        binding.textView1.text = it.size.toString()
-
-                        val adapter = GitHubDataListAdapter()
-                        binding.rvList.layoutManager = LinearLayoutManager(this)
-                        binding.rvList.adapter = adapter
-                        adapter.submitList(it)
+                        Toast.makeText(this, "Total items: ${it.size}", Toast.LENGTH_LONG).show()
                     }
                 }
             })
     }
+
+    override fun getNavController() = findNavController(R.id.nav_host_fragment)
 
 }

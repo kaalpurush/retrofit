@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <action
+        android:id="@+id/action_to_global_blank"
+        app:destination="@id/blankFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right"
+        app:popUpTo="@+id/homeFragment" />
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.codelixir.retrofit.ui.HomeFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_to_blank"
+            app:destination="@id/blankFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@+id/homeFragment">
+            <argument
+                android:name="message"
+                app:argType="string"
+                app:nullable="true" />
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/blankFragment"
+        android:name="com.codelixir.retrofit.ui.BlankFragment"
+        android:label="Blank"
+        tools:layout="@layout/fragment_blank">
+
+        <deepLink app:uri="https://retrofit.codelixir.com/blank?message={message}" />
+        <deepLink app:uri="retro://blank?message={message}" />
+
+        <argument
+            android:name="message"
+            app:argType="string"
+            app:nullable="true" />
+
+    </fragment>
+
+</navigation>
