@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.navigation.fragment.navArgs
 import com.codelixir.retrofit.databinding.FragmentBlankBinding
+import kotlin.random.Random
 
 class BlankFragment : BaseFragment() {
     private lateinit var binding: FragmentBlankBinding
@@ -28,7 +29,10 @@ class BlankFragment : BaseFragment() {
 
         binding.textView1.text = args.message ?: "Blank"
 
-        setFragmentResult("RESULT", bundleOf("message" to "Good Bye!"))
+        setFragmentResult(
+            "RESULT",
+            bundleOf("message" to "Good Bye! Random #${Random.nextInt(1, 10)}")
+        )
     }
 
 }

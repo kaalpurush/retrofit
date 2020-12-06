@@ -38,29 +38,39 @@
             app:defaultNavHost="true"
             app:navGraph="@navigation/nav_graph" />
 
-        <Button
-            android:id="@+id/btnRefresh"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Refresh" />
+            android:layout_marginTop="16dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
-        <Button
-            android:id="@+id/btnBlank"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Blank" />
+            <Button
+                android:id="@+id/btnR"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Refresh" />
 
-        <Button
-            android:id="@+id/btnNew"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="New" />
+            <Button
+                android:id="@+id/btnB"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Blank" />
 
-        <Button
-            android:id="@+id/btnKill"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Kill" />
+            <Button
+                android:id="@+id/btnNew"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New" />
+
+            <Button
+                android:id="@+id/btnKill"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Kill" />
+
+        </LinearLayout>
+
 
     </LinearLayout>
 

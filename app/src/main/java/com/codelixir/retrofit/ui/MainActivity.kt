@@ -3,7 +3,9 @@ package com.codelixir.retrofit.ui
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
@@ -22,7 +24,7 @@ import com.codelixir.retrofit.util.show
 class MainActivity : BaseActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var viewModel: GitHubViewModel
+    private val viewModel by viewModels<GitHubViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,19 +32,9 @@ class MainActivity : BaseActivity() {
         setContentView(binding.root)
         binding.toolbar.setupWithNavController(getNavController())
 
-        viewModel = ViewModelProvider(this).get(GitHubViewModel::class.java)
-
         val count = Application.getSetting("worker", 0)
 
-        Toast.makeText(this, "Worker Run Count: $count", Toast.LENGTH_LONG).show()
-
-        binding.btnRefresh.setOnClickListener {
-            refreshData()
-        }
-
-        binding.btnBlank.setOnClickListener {
-            navigateTo(NavGraphDirections.actionToGlobalBlank("Blank from Activity"))
-        }
+        Toast.makeText(this, "Worker Run Count: $count", Toast.LENGTH_SHORT).show()
 
         binding.btnNew.setOnClickListener {
             startActivity(
@@ -59,16 +51,25 @@ class MainActivity : BaseActivity() {
             System.exit(0)
         }
 
+        binding.btnR.setOnClickListener {
+            refreshData()
+        }
+
+        binding.btnB.setOnClickListener {
+            navigateTo(NavGraphDirections.actionToGlobalBlank("Blank from Activity"))
+        }
+
         val graph = getNavController().navInflater.inflate(R.navigation.nav_graph)
         getNavController().graph = graph
     }
 
     private fun refreshData() {
+        Toast.makeText(this, "Refreshing...", Toast.LENGTH_SHORT).show()
         viewModel.getSharedRepositories()
             .observe(this, Observer { out ->
                 if (out.status == Resource.Status.SUCCESS) {
                     out.data?.let {
-                        Toast.makeText(this, "Total items: ${it.size}", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this, "Total items: ${it.size}", Toast.LENGTH_SHORT).show()
                     }
                 }
             })
