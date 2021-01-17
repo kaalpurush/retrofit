@@ -29,15 +29,29 @@
         android:layout_height="wrap_content"
         android:text="Hello World!" />
 
-    <Button
-        android:id="@+id/btnRefresh"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Refresh" />
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/btnBlank"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Blank" />
+        <Button
+            android:id="@+id/btnRefresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Refresh" />
+
+        <Button
+            android:id="@+id/btnBlank"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Blank" />
+
+        <Button
+            android:id="@+id/btnUpload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Upload" />
+
+    </LinearLayout>
 </LinearLayout>

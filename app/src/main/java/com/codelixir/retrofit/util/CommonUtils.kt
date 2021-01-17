@@ -9,21 +9,25 @@ import android.location.Address
 import android.location.Geocoder
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.net.NetworkInfo
 import android.net.Uri
 import android.os.Build
 import android.text.TextUtils
 import android.text.format.DateUtils
 import android.view.*
+import android.webkit.MimeTypeMap
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.LayoutRes
-import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.app.ShareCompat
+import androidx.core.content.FileProvider
 import androidx.core.text.HtmlCompat
+import com.codelixir.retrofit.Application
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.coroutines.CoroutineContext
@@ -108,6 +112,46 @@ fun View.getBitmap(): Bitmap {
     return Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).apply {
         this@getBitmap.draw(Canvas(this))
     }
+}
+
+fun getImageFileFromBitmap(bitmap: Bitmap): File =
+    File.createTempFile(UUID.randomUUID().toString(), ".jpg", Application.context.externalCacheDir)
+        .apply {
+            FileOutputStream(this).apply {
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, this)
+                flush()
+                close()
+            }
+        }.apply { deleteOnExit() }
+
+suspend fun View.getBitmapAsImageFile(): File {
+    return getImageFileFromBitmap(
+        getBitmap()
+    )
+}
+
+fun Activity.shareFile(file: File, shareTitle: String) {
+    val type = try {
+        MimeTypeMap.getSingleton().getMimeTypeFromExtension(file.extension)
+    } catch (e: Exception) {
+        "image/*"
+    }
+
+    val intent = ShareCompat.IntentBuilder.from(this)
+        .setStream(
+            FileProvider.getUriForFile(
+                applicationContext,
+                applicationContext.getPackageName() + ".provider",
+                file
+            )
+        )
+        .setType(type)
+        .intent
+        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        .putExtra(Intent.EXTRA_TEXT, shareTitle)
+        .putExtra(Intent.EXTRA_SUBJECT, shareTitle)
+
+    startActivity(Intent.createChooser(intent, "Share"))
 }
 
 suspend fun coroutineContext(): CoroutineContext = suspendCoroutine { it.resume(it.context) }

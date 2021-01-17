@@ -32,6 +32,15 @@
                 app:argType="string"
                 app:nullable="true" />
         </action>
+        <action
+            android:id="@+id/action_to_upload"
+            app:destination="@id/uploadFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@+id/homeFragment">
+        </action>
     </fragment>
 
     <fragment
@@ -47,6 +56,14 @@
             android:name="message"
             app:argType="string"
             app:nullable="true" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/uploadFragment"
+        android:name="com.codelixir.retrofit.ui.UploadFragment"
+        android:label="Upload"
+        tools:layout="@layout/fragment_upload">
 
     </fragment>
 

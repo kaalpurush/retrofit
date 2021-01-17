@@ -49,6 +49,10 @@ class HomeFragment : BaseFragment() {
         binding.btnBlank.setOnClickListener {
             navigateTo(HomeFragmentDirections.actionToBlank("Blank from Fragment"))
         }
+
+        binding.btnUpload.setOnClickListener {
+            navigateTo(HomeFragmentDirections.actionToUpload())
+        }
     }
 
     private fun refreshData() {

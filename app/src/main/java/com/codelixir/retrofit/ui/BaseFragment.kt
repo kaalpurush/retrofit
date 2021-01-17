@@ -8,7 +8,7 @@ import androidx.navigation.fragment.findNavController
 
 open class BaseFragment : Fragment(), NavigationHost {
 
-    private val TAG by lazy {
+    protected val TAG by lazy {
         this::class.java.simpleName
     }
 

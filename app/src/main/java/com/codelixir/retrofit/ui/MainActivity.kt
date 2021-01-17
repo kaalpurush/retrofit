@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -20,6 +21,7 @@ import com.codelixir.retrofit.data.GitHubViewModel
 import com.codelixir.retrofit.data.Resource
 import com.codelixir.retrofit.databinding.ActivityMainBinding
 import com.codelixir.retrofit.util.show
+import kotlinx.coroutines.launch
 
 class MainActivity : BaseActivity() {
 
@@ -57,6 +59,8 @@ class MainActivity : BaseActivity() {
 
         binding.btnB.setOnClickListener {
             navigateTo(NavGraphDirections.actionToGlobalBlank("Blank from Activity"))
+
+            lifecycleScope.launch {  }
         }
 
         val graph = getNavController().navInflater.inflate(R.navigation.nav_graph)
