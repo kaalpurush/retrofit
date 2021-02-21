@@ -8,7 +8,8 @@ import androidx.room.TypeConverters
 
 @Database(entities = [GitHubEntity::class], version = 1, exportSchema = false)
 @TypeConverters(
-    DateConverter::class
+    DateConverter::class,
+    GitHubEntityOwnerConverter::class
 )
 
 abstract class AppDatabase : RoomDatabase() {

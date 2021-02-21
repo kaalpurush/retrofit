@@ -40,7 +40,6 @@ class UploadFragment : BaseFragment() {
         initOpenDocument()
     }
 
-
     private fun initReqPermission() {
         requestPermissionLauncher =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
@@ -66,8 +65,6 @@ class UploadFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
 
         binding.btnSelect.setOnClickListener {
             reqPermissionAndOpenDocuments()

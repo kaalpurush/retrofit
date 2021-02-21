@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -22,6 +23,7 @@ import com.codelixir.retrofit.data.Resource
 import com.codelixir.retrofit.databinding.ActivityMainBinding
 import com.codelixir.retrofit.util.show
 import kotlinx.coroutines.launch
+import org.funktionale.currying.curried
 
 class MainActivity : BaseActivity() {
 
@@ -37,6 +39,9 @@ class MainActivity : BaseActivity() {
         val count = Application.getSetting("worker", 0)
 
         Toast.makeText(this, "Worker Run Count: $count", Toast.LENGTH_SHORT).show()
+
+        val add = { x: Int, y: Int -> {x + y}}.curried()
+        add(4)(5)
 
         binding.btnNew.setOnClickListener {
             startActivity(
@@ -60,11 +65,16 @@ class MainActivity : BaseActivity() {
         binding.btnB.setOnClickListener {
             navigateTo(NavGraphDirections.actionToGlobalBlank("Blank from Activity"))
 
-            lifecycleScope.launch {  }
+            lifecycleScope.launch { }
         }
 
         val graph = getNavController().navInflater.inflate(R.navigation.nav_graph)
         getNavController().graph = graph
+
+        binding.rootScrollView.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener {
+                v, scrollX, scrollY, oldScrollX, oldScrollY ->
+            binding.tv1.text = scrollY.toString()
+        })
     }
 
     private fun refreshData() {

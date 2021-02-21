@@ -50,9 +50,11 @@ object GitHubDataRepository {
     }
 
     interface GitHubService {
+        //https://api.github.com/users/kaalpurush/repos
         @GET("/users/{user}/repos")
         suspend fun retrieveRepositories(@Path("user") user: String): List<GitHubEntity>
 
+        //https://api.github.com/repos/kaalpurush/retrofit-kotlin
         @GET("/repos/{user}/{repo_name}")
         suspend fun retrieveRepository(
             @Path("user") user: String,

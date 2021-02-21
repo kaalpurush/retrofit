@@ -4,11 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AbsListView
 import android.widget.Toast
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.codelixir.retrofit.data.GitHubViewModel
 import com.codelixir.retrofit.data.Resource
 import com.codelixir.retrofit.databinding.FragmentHomeBinding
@@ -53,6 +55,19 @@ class HomeFragment : BaseFragment() {
         binding.btnUpload.setOnClickListener {
             navigateTo(HomeFragmentDirections.actionToUpload())
         }
+
+        binding.rvList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                binding.textView2.text = newState.toString()
+            }
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                binding.textView1.text = dy.toString()
+            }
+        })
+
     }
 
     private fun refreshData() {
@@ -63,7 +78,7 @@ class HomeFragment : BaseFragment() {
                 if (out.status == Resource.Status.SUCCESS) {
                     out.data?.let {
                         println("Api:viewModel: $it")
-                        binding.textView1.text = it.size.toString()
+                        //binding.textView1.text = it.size.toString()
 
                         val adapter = GitHubDataListAdapter()
                         binding.rvList.layoutManager = LinearLayoutManager(requireActivity())

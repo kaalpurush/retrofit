@@ -289,3 +289,7 @@ fun hasInternet(context: Context): Boolean {
     }
     return result
 }
+
+fun Int.addMask(mask: Int): Int = this or mask
+fun Int.clearMask(mask: Int): Int = this xor mask
+fun Int.hasMask(mask: Int): Boolean = (this and mask) == mask

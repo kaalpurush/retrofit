@@ -28,6 +28,7 @@ class GitHubDataListAdapter :
             val item = getItem(position)
             tvName.text = item.name
             tvUrl.text = item.url
+            tvOwner.text = item.owner?.login
         }
     }
 

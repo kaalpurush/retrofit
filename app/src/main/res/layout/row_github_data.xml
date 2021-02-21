@@ -12,6 +12,12 @@
         tools:text="name" />
 
     <TextView
+        android:id="@+id/tvOwner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="owner" />
+
+    <TextView
         android:id="@+id/tvUrl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
