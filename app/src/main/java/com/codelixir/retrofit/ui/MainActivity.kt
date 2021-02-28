@@ -1,46 +1,61 @@
 package com.codelixir.retrofit.ui
 
+import RomUtils
+import RomUtils.askIgnoreBatteryOptimization
+import RomUtils.askMiuiIgnoreBatteryOptimization
+import RomUtils.hasBatteryOptimization
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.PersistableBundle
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.NestedScrollView
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.codelixir.retrofit.Application
 import com.codelixir.retrofit.NavGraphDirections
 import com.codelixir.retrofit.R
 import com.codelixir.retrofit.data.GitHubViewModel
 import com.codelixir.retrofit.data.Resource
 import com.codelixir.retrofit.databinding.ActivityMainBinding
-import com.codelixir.retrofit.util.show
-import kotlinx.coroutines.launch
+import com.codelixir.retrofit.util.toast
 import org.funktionale.currying.curried
 
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity<ActivityMainBinding>() {
 
-    private lateinit var binding: ActivityMainBinding
     private val viewModel by viewModels<GitHubViewModel>()
+
+    override fun getViewBinding(inflater: LayoutInflater) = ActivityMainBinding.inflate(inflater)
+    override fun getToolbar(): Toolbar = binding.toolbar
+    override fun getToolbarTitle(): TextView = binding.tvToolbarTitle
+    override fun getNavController() = findNavController(R.id.nav_host_fragment)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        binding.toolbar.setupWithNavController(getNavController())
+
+        val appBarConfiguration =
+            AppBarConfiguration
+                .Builder()
+                .setFallbackOnNavigateUpListener { onNavigateUp() }
+                .build()
+
+        binding.toolbar.setupWithNavController(getNavController(), appBarConfiguration)
 
         val count = Application.getSetting("worker", 0)
 
         Toast.makeText(this, "Worker Run Count: $count", Toast.LENGTH_SHORT).show()
 
-        val add = { x: Int, y: Int -> {x + y}}.curried()
+        val add = { x: Int, y: Int -> { x + y } }.curried()
         add(4)(5)
 
         binding.btnNew.setOnClickListener {
@@ -50,6 +65,10 @@ class MainActivity : BaseActivity() {
                     MainActivity::class.java
                 )
             )
+        }
+
+        binding.tvToolbarTitle.setOnClickListener {
+            toast(this, "Optimization:" + hasBatteryOptimization().toString())
         }
 
         binding.btnKill.setOnClickListener {
@@ -64,17 +83,30 @@ class MainActivity : BaseActivity() {
 
         binding.btnB.setOnClickListener {
             navigateTo(NavGraphDirections.actionToGlobalBlank("Blank from Activity"))
+        }
 
-            lifecycleScope.launch { }
+        binding.btnC.setOnClickListener {
+            cleanNavigateTo(NavGraphDirections.actionToGlobalBlank("Blank from Activity"))
         }
 
         val graph = getNavController().navInflater.inflate(R.navigation.nav_graph)
         getNavController().graph = graph
 
-        binding.rootScrollView.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener {
-                v, scrollX, scrollY, oldScrollX, oldScrollY ->
+        binding.rootScrollView.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
             binding.tv1.text = scrollY.toString()
         })
+
+        if (hasBatteryOptimization()) {
+            if (RomUtils.isMiui()) askMiuiIgnoreBatteryOptimization() else askIgnoreBatteryOptimization()
+        }
+    }
+
+    @SuppressLint("RestrictedApi")
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return if (item.itemId == android.R.id.home && getNavController().backStack.size < 1) {
+            finish()
+            true
+        } else super.onOptionsItemSelected(item)
     }
 
     private fun refreshData() {
@@ -89,6 +121,12 @@ class MainActivity : BaseActivity() {
             })
     }
 
-    override fun getNavController() = findNavController(R.id.nav_host_fragment)
+    override fun onResume() {
+        super.onResume()
+
+        Handler().postDelayed({
+            toast(this, "Optimization: " + hasBatteryOptimization().toString())
+        }, 5000)
+    }
 
 }

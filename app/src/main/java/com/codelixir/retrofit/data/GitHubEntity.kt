@@ -18,8 +18,14 @@ data class GitHubEntity(
     val url: String,
 
     @Expose
+    val language: String?,
+
+    @Expose
     val subscribers_count: Int?,
 
     @Expose
     val owner: GitHubEntityOwner?
-) : BaseEntity()
+) : BaseEntity() {
+    val programing_language: String
+        get() = language ?: "Undetected"
+}

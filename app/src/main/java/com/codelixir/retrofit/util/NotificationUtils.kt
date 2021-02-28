@@ -9,13 +9,13 @@ import android.graphics.Color
 import android.media.RingtoneManager
 import android.os.Build
 import com.codelixir.retrofit.R
-import androidx.core.app.NotificationCompat.Builder
+import androidx.core.app.NotificationCompat
 
 internal object NotificationUtils {
     fun sendNotification(context: Context, title: String, text: String) {
         val channelName = context.getString(R.string.app_name)
         val channelId = channelName.removeWhitespaces()
-        val builder = Builder(context, channelName)
+        val builder = NotificationCompat.Builder(context, channelName)
         val mNotificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 

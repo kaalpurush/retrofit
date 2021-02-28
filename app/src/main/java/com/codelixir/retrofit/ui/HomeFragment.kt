@@ -56,6 +56,10 @@ class HomeFragment : BaseFragment() {
             navigateTo(HomeFragmentDirections.actionToUpload())
         }
 
+        binding.btnList.setOnClickListener {
+            navigateTo(HomeFragmentDirections.actionToList())
+        }
+
         binding.rvList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
@@ -72,7 +76,7 @@ class HomeFragment : BaseFragment() {
 
     private fun refreshData() {
         viewModel.getRepositoriesWithFallback()
-            .observe(viewLifecycleOwner, Observer { out ->
+            .observe(viewLifecycleOwner, { out ->
                 binding.progressBar.show(out.status == Resource.Status.LOADING)
 
                 if (out.status == Resource.Status.SUCCESS) {
@@ -81,7 +85,7 @@ class HomeFragment : BaseFragment() {
                         //binding.textView1.text = it.size.toString()
 
                         val adapter = GitHubDataListAdapter()
-                        binding.rvList.layoutManager = LinearLayoutManager(requireActivity())
+                        binding.rvList.layoutManager = LinearLayoutManager(context)
                         binding.rvList.adapter = adapter
                         adapter.submitList(it)
                     }

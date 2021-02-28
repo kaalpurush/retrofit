@@ -17,10 +17,11 @@ open class BaseFragment : Fragment(), NavigationHost {
     protected fun navigateToDeeplink(deepLink: String) {
         try {
             startActivity(
-                Intent(
-                    Intent.ACTION_VIEW, Uri.parse(deepLink), requireContext(),
-                    BaseActivity::class.java
-                )
+                Intent().let { intent ->
+                    intent.data = Uri.parse(deepLink)
+                    intent.action = Intent.ACTION_VIEW
+                    intent
+                }
             )
         } catch (ex: Throwable) {
         }

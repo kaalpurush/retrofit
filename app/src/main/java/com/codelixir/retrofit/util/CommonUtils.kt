@@ -1,7 +1,9 @@
 package com.codelixir.retrofit.util
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.content.Context.POWER_SERVICE
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -11,8 +13,11 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
+import android.os.PowerManager
+import android.provider.Settings
 import android.text.TextUtils
 import android.text.format.DateUtils
+import android.util.Log
 import android.view.*
 import android.webkit.MimeTypeMap
 import android.widget.TextView
@@ -22,6 +27,7 @@ import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
 import androidx.core.text.HtmlCompat
 import com.codelixir.retrofit.Application
+import com.codelixir.retrofit.R
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -74,7 +80,8 @@ operator fun ViewGroup.minusAssign(child: View) = removeView(child)
 operator fun ViewGroup.contains(child: View) = indexOfChild(child) != -1
 
 inline fun <T : View> T.afterMeasured(crossinline block: T.() -> Unit) {
-    viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+    viewTreeObserver.addOnGlobalLayoutListener(object :
+        ViewTreeObserver.OnGlobalLayoutListener {
         override fun onGlobalLayout() {
             if (measuredWidth > 0 && measuredHeight > 0) {
                 viewTreeObserver.removeOnGlobalLayoutListener(this)
@@ -115,7 +122,11 @@ fun View.getBitmap(): Bitmap {
 }
 
 fun getImageFileFromBitmap(bitmap: Bitmap): File =
-    File.createTempFile(UUID.randomUUID().toString(), ".jpg", Application.context.externalCacheDir)
+    File.createTempFile(
+        UUID.randomUUID().toString(),
+        ".jpg",
+        Application.context.externalCacheDir
+    )
         .apply {
             FileOutputStream(this).apply {
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, this)

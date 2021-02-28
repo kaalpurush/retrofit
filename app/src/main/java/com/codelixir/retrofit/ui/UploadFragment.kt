@@ -56,7 +56,7 @@ class UploadFragment : BaseFragment() {
             OpenMultipleDocuments()
         ) { urilist ->
             for (uri in urilist) {
-                val filename: String = uri.getLastPathSegment() ?: "invalid"
+                val filename: String = uri.lastPathSegment ?: "invalid"
                 Log.d("FILE", filename)
                 binding.ivImage.load(uri) { allowHardware(false) }
             }
