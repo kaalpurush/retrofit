@@ -19,20 +19,12 @@ import com.codelixir.retrofit.util.shareFile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class UploadFragment : BaseFragment() {
-    private lateinit var binding: FragmentUploadBinding
+class UploadFragment : BaseFragment<FragmentUploadBinding>() {
     private lateinit var openMultipleDocumentsLauncher: ActivityResultLauncher<Array<String>>
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return FragmentUploadBinding.inflate(inflater, container, false).let {
-            binding = it
-            binding.root
-        }
-    }
+    override fun getViewBinding(inflater: LayoutInflater, container: ViewGroup?) =
+        FragmentUploadBinding.inflate(inflater, container, false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

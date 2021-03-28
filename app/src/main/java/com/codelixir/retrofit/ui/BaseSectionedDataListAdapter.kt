@@ -1,25 +1,25 @@
 package com.codelixir.retrofit.ui
 
-import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.CallSuper
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.codelixir.retrofit.R
-import com.codelixir.retrofit.data.GitHubEntity
 import com.codelixir.retrofit.ui.BaseSectionedDataListAdapter.DataListViewHolder
 import com.codelixir.retrofit.ui.BaseSectionedDataListAdapter.SubheaderHolder
 import com.zhukic.sectionedrecyclerview.SectionedRecyclerViewAdapter
 
-abstract class BaseSectionedDataListAdapter internal constructor(var list: List<GitHubEntity>) :
+abstract class BaseSectionedDataListAdapter<T> internal constructor(var list: MutableList<T>) :
     SectionedRecyclerViewAdapter<SubheaderHolder, DataListViewHolder>() {
 
     interface OnItemClickListener {
-        fun onItemClicked(DataList: GitHubEntity?)
+        fun onItemClicked(DataList: Any?)
         fun onSubheaderClicked(position: Int)
     }
 
@@ -39,6 +39,7 @@ abstract class BaseSectionedDataListAdapter internal constructor(var list: List<
     class DataListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         @JvmField
         var itemTitle: TextView
+
         @JvmField
         var itemGenre: TextView
 
@@ -88,11 +89,10 @@ abstract class BaseSectionedDataListAdapter internal constructor(var list: List<
         }
     }
 
-    override fun getItemSize(): Int {
-        return list.size
-    }
+
 
     fun setOnItemClickListener(onItemClickListener: OnItemClickListener?) {
         this.listener = onItemClickListener
     }
+
 }

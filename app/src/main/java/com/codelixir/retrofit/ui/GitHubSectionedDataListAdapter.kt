@@ -1,18 +1,27 @@
 package com.codelixir.retrofit.ui
 
 import android.view.View
+import android.widget.Filter
+import android.widget.Filterable
 import com.codelixir.retrofit.data.GitHubEntity
 
-class GitHubSectionedDataListAdapter(itemList: List<GitHubEntity>) :
-    BaseSectionedDataListAdapter(itemList) {
+class GitHubSectionedDataListAdapter(list: MutableList<GitHubEntity>) :
+    BaseSectionedDataListAdapter<GitHubEntity>(list), Filterable {
+
+    private var filteredList: MutableList<GitHubEntity> = list
+
     override fun onPlaceSubheaderBetweenItems(position: Int): Boolean {
-        val movieGenre = list[position].programing_language
-        val nextMovieGenre = list[position + 1].programing_language
+        val movieGenre = filteredList[position].programing_language
+        val nextMovieGenre = filteredList[position + 1].programing_language
         return movieGenre != nextMovieGenre
     }
 
+    override fun getItemSize(): Int {
+        return filteredList.size
+    }
+
     override fun onBindItemViewHolder(holder: DataListViewHolder, position: Int) {
-        val item = list[position]
+        val item = filteredList[position]
         holder.itemTitle.text = item.name
         holder.itemGenre.text = item.programing_language
         holder.itemView.setOnClickListener { v: View? -> listener?.onItemClicked(item) }
@@ -24,7 +33,39 @@ class GitHubSectionedDataListAdapter(itemList: List<GitHubEntity>) :
     ) {
         super.onBindSubheaderViewHolder(subheaderHolder, nextItemPosition)
         val context = subheaderHolder.itemView.context
-        val genre = list[nextItemPosition].programing_language
+        val genre = filteredList[nextItemPosition].programing_language
         subheaderHolder.mSubheaderText.text = genre
+    }
+
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(charSequence: CharSequence): FilterResults {
+                val charString = charSequence.toString()
+                if (charString.isBlank()) {
+                    filteredList = list
+                } else {
+                    filteredList = list.filter { item ->
+                        item.name.contains(
+                            charString,
+                            true
+                        ) || item.programing_language.contains(
+                            charString,
+                            true
+                        )
+                    } as MutableList<GitHubEntity>
+                }
+
+                FilterResults().apply {
+                    values = filteredList
+                    return this
+                }
+            }
+
+            @Suppress("UNCHECKED_CAST")
+            override fun publishResults(charSequence: CharSequence, filterResults: FilterResults) {
+                filteredList = filterResults.values as MutableList<GitHubEntity>
+                notifyDataChanged()
+            }
+        }
     }
 }

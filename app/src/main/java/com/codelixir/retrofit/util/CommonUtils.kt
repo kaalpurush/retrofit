@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Context.POWER_SERVICE
 import android.content.Intent
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.location.Address
@@ -17,6 +18,7 @@ import android.os.PowerManager
 import android.provider.Settings
 import android.text.TextUtils
 import android.text.format.DateUtils
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.*
 import android.webkit.MimeTypeMap
@@ -26,6 +28,10 @@ import androidx.annotation.LayoutRes
 import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
 import androidx.core.text.HtmlCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import com.codelixir.retrofit.Application
 import com.codelixir.retrofit.R
 import com.google.gson.Gson
@@ -101,11 +107,11 @@ fun ImageView.load(url: String?, @DrawableRes placeHolder: Int = 0) {
         .into(this)
 }*/
 
-fun dpToPx(dp: Int, context: Context): Float =
-    (dp * context.getResources().getDisplayMetrics().density)
 
-fun pxToDp(px: Int, context: Context): Float =
-    (px / context.getResources().getDisplayMetrics().density)
+fun Int.dpToPx(context: Context): Float = this.times(context.resources.displayMetrics.density)
+
+fun Float.pxToDp(context: Context): Int =
+    this.div(context.resources.displayMetrics.density).toInt()
 
 fun setHtml(textView: TextView, text: String) {
     textView.text = HtmlCompat.fromHtml(text, HtmlCompat.FROM_HTML_MODE_LEGACY)
@@ -114,6 +120,17 @@ fun setHtml(textView: TextView, text: String) {
 fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false): View {
     return LayoutInflater.from(context).inflate(layoutRes, this, attachToRoot)
 }
+
+fun View.setMargin(top: Int? = null, bottom: Int? = null, left: Int? = null, right: Int? = null) =
+    (layoutParams as? ViewGroup.MarginLayoutParams)?.let { lp ->
+        lp.setMargins(
+            left?.dpToPx(context)?.toInt() ?: lp.leftMargin,
+            top?.dpToPx(context)?.toInt() ?: lp.topMargin,
+            right?.dpToPx(context)?.toInt() ?: lp.rightMargin,
+            bottom?.dpToPx(context)?.toInt() ?: lp.bottomMargin
+        )
+        layoutParams = lp
+    }
 
 fun View.getBitmap(): Bitmap {
     return Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).apply {
@@ -250,6 +267,9 @@ fun getAddressFromLatLong(context: Context, lat: Double, long: Double): Address?
     }
 }
 
+fun Any?.isNull() = this == null
+fun Any?.isNotNull() = isNull().not()
+
 fun String.isNumeric(): Boolean = this matches "-?\\d+(\\.\\d+)?".toRegex()
 fun String.removeWhitespaces(): String {
     return this.replace("[\\s-]*".toRegex(), "")
@@ -304,3 +324,15 @@ fun hasInternet(context: Context): Boolean {
 fun Int.addMask(mask: Int): Int = this or mask
 fun Int.clearMask(mask: Int): Int = this xor mask
 fun Int.hasMask(mask: Int): Boolean = (this and mask) == mask
+
+fun <T> LiveData<T>.observeOnce(lifecycleOwner: LifecycleOwner, observer: Observer<T>) {
+    observe(lifecycleOwner, object : Observer<T> {
+        override fun onChanged(t: T?) {
+            observer.onChanged(t)
+            removeObserver(this)
+        }
+    })
+}
+
+fun Lifecycle.isInResume() = currentState.isAtLeast(Lifecycle.State.RESUMED)
+fun Lifecycle.isNotInResume() = isInResume().not()

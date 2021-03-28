@@ -31,8 +31,4 @@ object RetrofitClient {
     fun get(): Retrofit {
         return client
     }
-
-    inline fun <reified T> createCaller(): T {
-        return get().create(T::class.java)
-    }
 }

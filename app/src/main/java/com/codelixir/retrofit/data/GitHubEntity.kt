@@ -27,5 +27,7 @@ data class GitHubEntity(
     val owner: GitHubEntityOwner?
 ) : BaseEntity() {
     val programing_language: String
-        get() = language ?: "Undetected"
+        get() = language ?: "Undefined"
+
+    //val language: String by UndefinedStringDelegate()
 }

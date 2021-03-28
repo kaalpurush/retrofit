@@ -2,15 +2,34 @@ package com.codelixir.retrofit.ui
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
+import androidx.viewbinding.ViewBinding
+import com.codelixir.retrofit.databinding.FragmentHomeBinding
+import com.codelixir.retrofit.databinding.FragmentListBinding
 
-open class BaseFragment : Fragment(), NavigationHost {
+abstract class BaseFragment<T : ViewBinding> : Fragment(), NavigationHost {
 
     protected val TAG by lazy {
         this::class.java.simpleName
     }
+
+    protected lateinit var binding: T
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = getViewBinding(inflater, container)
+        return binding.root
+    }
+
+    abstract fun getViewBinding(inflater: LayoutInflater, container: ViewGroup?): T
 
     override fun getNavController(): NavController = findNavController()
 

@@ -5,6 +5,7 @@ import com.codelixir.retrofit.Application
 import com.codelixir.retrofit.util.hasInternet
 import com.codelixir.retrofit.util.runIfConnected
 import retrofit2.Response
+import retrofit2.create
 import retrofit2.http.GET
 import retrofit2.http.Path
 import java.lang.Exception
@@ -13,7 +14,7 @@ object GitHubDataRepository {
     private var data: List<GitHubEntity>? = null
 
     private val service by lazy {
-        RetrofitClient.createCaller<GitHubService>()
+        RetrofitClient.get().create<GitHubService>()
     }
 
     private val db by lazy {

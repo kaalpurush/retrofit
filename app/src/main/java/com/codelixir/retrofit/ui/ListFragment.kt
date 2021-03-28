@@ -1,9 +1,11 @@
 package com.codelixir.retrofit.ui
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
@@ -12,16 +14,16 @@ import com.codelixir.retrofit.data.GitHubEntity
 import com.codelixir.retrofit.data.GitHubViewModel
 import com.codelixir.retrofit.data.Resource
 import com.codelixir.retrofit.databinding.FragmentListBinding
+import com.codelixir.retrofit.util.isInResume
+import com.codelixir.retrofit.util.isNotInResume
 import com.codelixir.retrofit.util.toast
 import java.util.*
 
 
-class ListFragment : BaseFragment() {
-    private lateinit var binding: FragmentListBinding
-
+class ListFragment : BaseFragment<FragmentListBinding>() {
     private val viewModel by viewModels<GitHubViewModel>()
 
-    private var mSectionedRecyclerAdapter: BaseSectionedDataListAdapter? = null
+    private var mSectionedRecyclerAdapter: GitHubSectionedDataListAdapter? = null
 
     private var list: ArrayList<GitHubEntity> = arrayListOf()
 
@@ -35,15 +37,8 @@ class ListFragment : BaseFragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return FragmentListBinding.inflate(inflater, container, false).let {
-            binding = it
-            binding.root
-        }
-    }
+    override fun getViewBinding(inflater: LayoutInflater, container: ViewGroup?) =
+        FragmentListBinding.inflate(inflater, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -62,6 +57,23 @@ class ListFragment : BaseFragment() {
         binding.btnScroll.setOnClickListener {
             scrollToSectionHeader(pos++)
         }
+
+        binding.edtSearch.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            val mHandler = Handler()
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                mHandler.removeCallbacksAndMessages(null)
+
+                mHandler.postDelayed(Runnable {
+                    if (lifecycle.isNotInResume()) return@Runnable
+                    mSectionedRecyclerAdapter?.filter?.filter(newText)
+                }, 500)
+                return true
+            }
+        })
     }
 
     private fun refreshData() {

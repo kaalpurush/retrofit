@@ -20,9 +20,7 @@ abstract class BaseActivity<T : ViewBinding> : AppCompatActivity(), NavigationHo
         this::class.java.simpleName
     }
 
-    val binding: T by lazy {
-        getViewBinding(layoutInflater)
-    }
+    protected lateinit var binding: T
 
     private val navListener: NavController.OnDestinationChangedListener by lazy {
         NavController.OnDestinationChangedListener(this::onNavDestinationChanged)
@@ -47,6 +45,7 @@ abstract class BaseActivity<T : ViewBinding> : AppCompatActivity(), NavigationHo
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = getViewBinding(layoutInflater)
         setContentView(binding.root)
     }
 

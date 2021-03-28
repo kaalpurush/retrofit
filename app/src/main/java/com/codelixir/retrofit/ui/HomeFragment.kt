@@ -14,10 +14,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.codelixir.retrofit.data.GitHubViewModel
 import com.codelixir.retrofit.data.Resource
 import com.codelixir.retrofit.databinding.FragmentHomeBinding
+import com.codelixir.retrofit.databinding.FragmentListBinding
 import com.codelixir.retrofit.util.show
 
-class HomeFragment : BaseFragment() {
-    private lateinit var binding: FragmentHomeBinding
+class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     private val viewModel by viewModels<GitHubViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,15 +28,8 @@ class HomeFragment : BaseFragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return FragmentHomeBinding.inflate(inflater, container, false).let {
-            binding = it
-            binding.root
-        }
-    }
+    override fun getViewBinding(inflater: LayoutInflater, container: ViewGroup?) =
+        FragmentHomeBinding.inflate(inflater, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
