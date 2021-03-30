@@ -1,4 +1,5 @@
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -10,6 +11,8 @@ import android.os.PowerManager
 import android.provider.Settings
 import android.text.TextUtils
 import android.util.Log
+import androidx.activity.result.ActivityResultLauncher
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat.startActivity
 import com.codelixir.retrofit.R
 import java.io.BufferedReader
@@ -19,6 +22,7 @@ import java.io.InputStreamReader
 
 object RomUtils {
     private const val TAG = "RomUtils"
+    const val IGNORE_BATTERY_OPTIMIZATIONS_REQUEST_CODE = 101
 
     fun Context.hasBatteryOptimization(): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -30,28 +34,54 @@ object RomUtils {
     }
 
     @SuppressLint("BatteryLife")
-    fun Context.askIgnoreBatteryOptimization() {
+    fun Activity.askIgnoreBatteryOptimization(): Boolean {
         Intent().let { intent ->
             intent.action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
             intent.data = Uri.fromParts("package", packageName, null)
-            try {
-                startActivity(intent)
+            return try {
+                startActivityForResult(
+                    intent,
+                    IGNORE_BATTERY_OPTIMIZATIONS_REQUEST_CODE
+                )
+                true
             } catch (ex: Throwable) {
+                false
             }
         }
     }
 
-    fun Context.askMiuiIgnoreBatteryOptimization(): Boolean {
+    @SuppressLint("BatteryLife")
+    fun Activity.askIgnoreBatteryOptimization(startForResult: ActivityResultLauncher<Intent>? = null): Boolean {
+        Intent().let { intent ->
+            intent.action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+            intent.data = Uri.fromParts("package", packageName, null)
+            return try {
+                startForResult?.let {
+                    it.launch(intent)
+                } ?: run {
+                    startActivityForResult(intent, IGNORE_BATTERY_OPTIMIZATIONS_REQUEST_CODE)
+                }
+                true
+            } catch (ex: Throwable) {
+                false
+            }
+        }
+    }
+
+    fun Activity.askMiuiIgnoreBatteryOptimization(startForResult: ActivityResultLauncher<Intent>? = null): Boolean {
         return try {
             val intent = Intent("miui.intent.action.HIDDEN_APPS_CONFIG_ACTIVITY")
             //            intent.setComponent(new ComponentName("com.miui.powerkeeper",
             //                    "com.miui.powerkeeper.ui.HiddenAppsConfigActivity"));
             intent.putExtra("package_name", packageName)
             intent.putExtra("package_label", getString(R.string.app_name))
-            startActivity(intent)
+            startForResult?.let {
+                it.launch(intent)
+            } ?: run {
+                startActivityForResult(intent, IGNORE_BATTERY_OPTIMIZATIONS_REQUEST_CODE)
+            }
             true
         } catch (ex: Exception) {
-            ex.printStackTrace()
             false
         }
     }

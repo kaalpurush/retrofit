@@ -77,7 +77,7 @@
     <fragment
         android:id="@+id/listFragment"
         android:name="com.codelixir.retrofit.ui.ListFragment"
-        android:label="list"
+        android:label="List"
         tools:layout="@layout/fragment_list">
     </fragment>
 

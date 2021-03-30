@@ -1,11 +1,11 @@
 package com.codelixir.retrofit.util
 
-import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
-import android.content.Context.POWER_SERVICE
-import android.content.Intent
-import android.content.res.Resources
+import android.app.PendingIntent
+import android.content.*
+import android.content.Intent.EXTRA_CHOSEN_COMPONENT
+import android.content.pm.ComponentInfo
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.location.Address
@@ -14,12 +14,8 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
-import android.os.PowerManager
-import android.provider.Settings
 import android.text.TextUtils
 import android.text.format.DateUtils
-import android.util.DisplayMetrics
-import android.util.Log
 import android.view.*
 import android.webkit.MimeTypeMap
 import android.widget.TextView
@@ -33,7 +29,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.codelixir.retrofit.Application
-import com.codelixir.retrofit.R
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -46,6 +41,7 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 import kotlin.reflect.KClass
+
 
 fun View.hide() {
     this.visibility = View.GONE
@@ -165,21 +161,74 @@ fun Activity.shareFile(file: File, shareTitle: String) {
         "image/*"
     }
 
-    val intent = ShareCompat.IntentBuilder.from(this)
-        .setStream(
-            FileProvider.getUriForFile(
-                applicationContext,
-                applicationContext.getPackageName() + ".provider",
-                file
-            )
-        )
-        .setType(type)
-        .intent
-        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        .putExtra(Intent.EXTRA_TEXT, shareTitle)
-        .putExtra(Intent.EXTRA_SUBJECT, shareTitle)
+    val uri = FileProvider.getUriForFile(
+        applicationContext,
+        applicationContext.packageName + ".provider",
+        file
+    )
 
-    startActivity(Intent.createChooser(intent, "Share"))
+    val intent = ShareCompat.IntentBuilder.from(this)
+        .setStream(uri)
+        .setType(type)
+        .setText(uri.toString())
+        .setEmailTo(arrayOf("mail@codelixir.com"))
+        .setSubject(shareTitle)
+        .intent
+        .apply {
+            clipData = ClipData.newRawUri(null, uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION) //FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+            putExtra(Intent.EXTRA_TITLE, shareTitle)
+        }
+
+/*    val resInfoList =
+        packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+    for (resolveInfo in resInfoList) {
+        val packageName = resolveInfo.activityInfo.packageName
+        grantUriPermission(
+            packageName,
+            uri,
+            Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
+        )
+    }*/
+
+    val br = object : BroadcastReceiver() {
+        override fun onReceive(contxt: Context?, intent: Intent?) {
+            val componentInfo: ComponentName =
+                intent?.getParcelableExtra(EXTRA_CHOSEN_COMPONENT) as ComponentName
+            toast(
+                this@shareFile,
+                "Received by: " +
+                        getAppNameFromPackageName(
+                            componentInfo.packageName
+                        ) +
+                        " (" + componentInfo.packageName + ")"
+            )
+        }
+    }
+
+    val pi = PendingIntent.getBroadcast(
+        this, 0,
+        Intent("SHARE_CHOSEN_COMPONENT"),
+        PendingIntent.FLAG_UPDATE_CURRENT
+    )
+
+    this.registerReceiver(br, IntentFilter("SHARE_CHOSEN_COMPONENT"))
+
+    val chooserIntent = Intent.createChooser(intent, "Share", pi.intentSender)
+    startActivity(chooserIntent)
+}
+
+
+fun Context.getAppNameFromPackageName(packageName: String): String? {
+    return try {
+        val packageManager = packageManager
+        val info =
+            packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
+        packageManager.getApplicationLabel(info) as String
+    } catch (e: PackageManager.NameNotFoundException) {
+        e.printStackTrace()
+        ""
+    }
 }
 
 suspend fun coroutineContext(): CoroutineContext = suspendCoroutine { it.resume(it.context) }

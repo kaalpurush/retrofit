@@ -44,11 +44,6 @@ class ListFragment : BaseFragment<FragmentListBinding>() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
-        val movieComparator =
-            { o1: GitHubEntity, o2: GitHubEntity ->
-                o1.programing_language.compareTo(o2.programing_language)
-            }
-        Collections.sort(list, movieComparator)
         mSectionedRecyclerAdapter = GitHubSectionedDataListAdapter(list)
         binding.recyclerView.adapter = mSectionedRecyclerAdapter
 
@@ -83,12 +78,16 @@ class ListFragment : BaseFragment<FragmentListBinding>() {
                     toast(requireContext(), "size:" + out.data?.size)
                     out.data?.let {
                         list.clear()
-                        list.addAll(it)
-                        val movieComparator =
+
+                        val comparator =
                             { o1: GitHubEntity, o2: GitHubEntity ->
                                 o1.programing_language.compareTo(o2.programing_language)
                             }
-                        Collections.sort(list, movieComparator)
+                        list.addAll(it.sortedWith(comparator))
+
+//                        val sort = arrayListOf<String>("Java", "C++", "TypeScript")
+//                        list.addAll(it.sortedBy { sort.indexOf(it.language) })
+
                         mSectionedRecyclerAdapter?.notifyDataChanged()
                     }
                 }

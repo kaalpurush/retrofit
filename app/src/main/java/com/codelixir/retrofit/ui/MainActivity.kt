@@ -1,6 +1,7 @@
 package com.codelixir.retrofit.ui
 
 import RomUtils
+import RomUtils.IGNORE_BATTERY_OPTIMIZATIONS_REQUEST_CODE
 import RomUtils.askIgnoreBatteryOptimization
 import RomUtils.askMiuiIgnoreBatteryOptimization
 import RomUtils.hasBatteryOptimization
@@ -13,6 +14,8 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.NestedScrollView
@@ -96,9 +99,22 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             binding.tv1.text = scrollY.toString()
         })
 
+        checkBatteryOptimization()
+    }
+
+    fun checkBatteryOptimization() {
         if (hasBatteryOptimization()) {
-            if (RomUtils.isMiui()) askMiuiIgnoreBatteryOptimization() else askIgnoreBatteryOptimization()
+            val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                toast(this, "Optimization: " + hasBatteryOptimization().toString())
+            }
+
+            if (RomUtils.isMiui())
+                askMiuiIgnoreBatteryOptimization(startForResult)
+            else
+                askIgnoreBatteryOptimization(startForResult)
         }
+
+
     }
 
     @SuppressLint("RestrictedApi")
@@ -121,12 +137,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             })
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        Handler().postDelayed({
+/*    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == IGNORE_BATTERY_OPTIMIZATIONS_REQUEST_CODE) {
             toast(this, "Optimization: " + hasBatteryOptimization().toString())
-        }, 5000)
-    }
+        }
+    }*/
 
 }
