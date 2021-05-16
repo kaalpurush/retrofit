@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.Build
 import android.preference.PreferenceManager
 import androidx.work.*
-import com.codelixir.retrofit.data.RefreshWorker
+import com.codelixir.retrofit.service.RefreshWorker
 import com.codelixir.retrofit.util.getClass
 import com.facebook.stetho.Stetho
 import kotlinx.coroutines.CoroutineScope
@@ -54,6 +54,7 @@ class Application : android.app.Application(), Configuration.Provider {
             .build()
 
         val repeatingRequest = PeriodicWorkRequestBuilder<RefreshWorker>(1, TimeUnit.DAYS)
+            .addTag("RefreshWorker")
             .setConstraints(constraints)
             .build()
 

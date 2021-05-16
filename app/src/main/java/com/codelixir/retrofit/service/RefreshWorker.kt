@@ -1,4 +1,4 @@
-package com.codelixir.retrofit.data
+package com.codelixir.retrofit.service
 
 import android.annotation.TargetApi
 import android.app.Notification
@@ -13,6 +13,7 @@ import androidx.work.WorkerParameters
 import com.codelixir.retrofit.Application
 import com.codelixir.retrofit.R
 import androidx.core.app.NotificationCompat.Builder
+import com.codelixir.retrofit.data.GitHubDataRepository
 
 
 class RefreshWorker(context: Context, params: WorkerParameters) :

@@ -12,8 +12,14 @@ import com.codelixir.retrofit.R
 import androidx.core.app.NotificationCompat
 
 internal object NotificationUtils {
-    fun sendNotification(context: Context, title: String, text: String) {
-        val channelName = context.getString(R.string.app_name)
+    fun sendNotification(
+        context: Context,
+        title: String,
+        text: String,
+        notificationId: Int = 0,
+        notificationChannel: String? = null
+    ) {
+        val channelName = notificationChannel ?: context.getString(R.string.app_name)
         val channelId = channelName.removeWhitespaces()
         val builder = NotificationCompat.Builder(context, channelName)
         val mNotificationManager =
@@ -53,6 +59,6 @@ internal object NotificationUtils {
             }
 
         // Issue the notification
-        mNotificationManager.notify(0, builder.build())
+        mNotificationManager.notify(notificationId, builder.build())
     }
 }

@@ -14,7 +14,6 @@ import com.codelixir.retrofit.data.GitHubEntity
 import com.codelixir.retrofit.data.GitHubViewModel
 import com.codelixir.retrofit.data.Resource
 import com.codelixir.retrofit.databinding.FragmentListBinding
-import com.codelixir.retrofit.util.isInResume
 import com.codelixir.retrofit.util.isNotInResume
 import com.codelixir.retrofit.util.toast
 import java.util.*

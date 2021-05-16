@@ -14,10 +14,13 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
+import android.os.Looper
 import android.text.TextUtils
 import android.text.format.DateUtils
 import android.view.*
+import android.view.inputmethod.InputMethodManager
 import android.webkit.MimeTypeMap
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.LayoutRes
@@ -29,6 +32,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.codelixir.retrofit.Application
+import com.codelixir.retrofit.R
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -170,7 +174,7 @@ fun Activity.shareFile(file: File, shareTitle: String) {
     val intent = ShareCompat.IntentBuilder.from(this)
         .setStream(uri)
         .setType(type)
-        .setText(uri.toString())
+        .setText("Link: https://codelixir.com \nSharing: ${uri.toString()}")
         .setEmailTo(arrayOf("mail@codelixir.com"))
         .setSubject(shareTitle)
         .intent
@@ -193,16 +197,18 @@ fun Activity.shareFile(file: File, shareTitle: String) {
 
     val br = object : BroadcastReceiver() {
         override fun onReceive(contxt: Context?, intent: Intent?) {
-            val componentInfo: ComponentName =
-                intent?.getParcelableExtra(EXTRA_CHOSEN_COMPONENT) as ComponentName
-            toast(
-                this@shareFile,
-                "Received by: " +
+            val componentInfo: ComponentName? =
+                intent?.getParcelableExtra(EXTRA_CHOSEN_COMPONENT) as ComponentName?
+            componentInfo?.let {
+                toast(
+                    this@shareFile,
+                    "Received by: ${
                         getAppNameFromPackageName(
                             componentInfo.packageName
-                        ) +
-                        " (" + componentInfo.packageName + ")"
-            )
+                        )
+                    } (${componentInfo.flattenToString()})"
+                )
+            }
         }
     }
 
@@ -226,7 +232,6 @@ fun Context.getAppNameFromPackageName(packageName: String): String? {
             packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
         packageManager.getApplicationLabel(info) as String
     } catch (e: PackageManager.NameNotFoundException) {
-        e.printStackTrace()
         ""
     }
 }
@@ -272,7 +277,7 @@ fun Any.toJson(): String = Gson().toJson(this)
 inline fun <reified T> fromJson(json: String): T? = Gson().fromJson(json, T::class.java)
 
 fun handlerCompat(ellapsedTime: Long, callback: () -> Unit) {
-    val handler = android.os.Handler()
+    val handler = android.os.Handler(Looper.getMainLooper())
     handler.postDelayed(callback, ellapsedTime)
 }
 
@@ -383,5 +388,25 @@ fun <T> LiveData<T>.observeOnce(lifecycleOwner: LifecycleOwner, observer: Observ
     })
 }
 
-fun Lifecycle.isInResume() = currentState.isAtLeast(Lifecycle.State.RESUMED)
-fun Lifecycle.isNotInResume() = isInResume().not()
+fun Lifecycle.isAtLeastInitialized() = currentState.isAtLeast(Lifecycle.State.INITIALIZED)
+fun Lifecycle.isAtLeastCreated() = currentState.isAtLeast(Lifecycle.State.CREATED)
+fun Lifecycle.isAtLeastStarted() = currentState.isAtLeast(Lifecycle.State.STARTED)
+fun Lifecycle.isAtLeastResumed() = currentState.isAtLeast(Lifecycle.State.RESUMED)
+fun Lifecycle.isNotInResume() = isAtLeastResumed().not()
+fun Lifecycle?.isNotInInitialized() = this?.isAtLeastInitialized()?.not() == true
+
+fun EditText.showKeyboard() {
+    requestFocus()
+    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+    imm?.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
+}
+
+fun View.hideKeyboard() {
+    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+    imm?.hideSoftInputFromWindow(windowToken, 0)
+}
+
+fun Activity.hideKeyboard() {
+    val view = findViewById<View>(R.id.content)
+    view?.hideKeyboard()
+}
