@@ -53,6 +53,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             navigateTo(HomeFragmentDirections.actionToList())
         }
 
+        binding.btnServer.setOnClickListener {
+            navigateTo(HomeFragmentDirections.actionToServer())
+        }
+
         binding.rvList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)

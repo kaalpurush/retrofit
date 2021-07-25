@@ -1,10 +1,9 @@
 package com.codelixir.retrofit.data
 
-import android.app.Application
 import androidx.lifecycle.*
 import kotlinx.coroutines.launch
 
-abstract class BaseViewModel(application: Application) : AndroidViewModel(application) {
+abstract class BaseViewModel : ViewModel() {
 
     protected fun <T> callApi(
         apiRequest: suspend () -> T?,

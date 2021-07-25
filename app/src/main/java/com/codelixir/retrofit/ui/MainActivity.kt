@@ -32,8 +32,10 @@ import com.codelixir.retrofit.data.GitHubViewModel
 import com.codelixir.retrofit.data.Resource
 import com.codelixir.retrofit.databinding.ActivityMainBinding
 import com.codelixir.retrofit.util.toast
+import dagger.hilt.android.AndroidEntryPoint
 import org.funktionale.currying.curried
 
+@AndroidEntryPoint
 class MainActivity : BaseActivity<ActivityMainBinding>() {
 
     private val viewModel by viewModels<GitHubViewModel>()

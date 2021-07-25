@@ -7,10 +7,12 @@ import androidx.work.*
 import com.codelixir.retrofit.service.RefreshWorker
 import com.codelixir.retrofit.util.getClass
 import com.facebook.stetho.Stetho
+import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import java.util.concurrent.TimeUnit
 
+@HiltAndroidApp
 class Application : android.app.Application(), Configuration.Provider {
 
     companion object {

@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 
-class GitHubViewModel(application: Application) : BaseViewModel(application) {
+class GitHubViewModel : BaseViewModel() {
 
     private lateinit var data: LiveData<Resource<List<GitHubEntity>>>
 
