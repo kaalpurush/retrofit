@@ -1,4 +1,4 @@
-package com.codelixir.retrofit.util;
+package com.codelixir.retrofit.util
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -37,13 +37,12 @@ internal object NotificationUtils {
             .setLights(Color.RED, 3000, 3000)
             .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
             .setVibrate(longArrayOf(1000, 1000, 1000, 1000, 1000))
-            .setPriority(Notification.PRIORITY_HIGH)
             .setContentTitle(title)
             .setContentText(text)
             .setAutoCancel(true)
             .apply {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    setPriority(NotificationManager.IMPORTANCE_HIGH)
+                    priority = NotificationManager.IMPORTANCE_HIGH
                 }
             }
             .apply {

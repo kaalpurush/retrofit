@@ -1,21 +1,23 @@
 package com.codelixir.retrofit.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AbsListView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.codelixir.retrofit.R
+import com.codelixir.retrofit.data.GitHubEntity
 import com.codelixir.retrofit.data.GitHubViewModel
 import com.codelixir.retrofit.data.Resource
 import com.codelixir.retrofit.databinding.FragmentHomeBinding
-import com.codelixir.retrofit.databinding.FragmentListBinding
 import com.codelixir.retrofit.util.show
+import com.codelixir.retrofit.util.toast
 
 class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     private val viewModel by viewModels<GitHubViewModel>()
@@ -74,17 +76,35 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     private fun refreshData() {
         viewModel.getRepositoriesWithFallback()
             .observe(viewLifecycleOwner, { out ->
-                binding.progressBar.show(out.status == Resource.Status.LOADING)
+                baseViewModel.progress.postValue(out.status == Resource.Status.LOADING)
 
                 if (out.status == Resource.Status.SUCCESS) {
-                    out.data?.let {
-                        println("Api:viewModel: $it")
-                        //binding.textView1.text = it.size.toString()
+                    val data = out.data
+                    println("Api:viewModel: $data")
 
-                        val adapter = GitHubDataListAdapter()
-                        binding.rvList.layoutManager = LinearLayoutManager(context)
-                        binding.rvList.adapter = adapter
-                        adapter.submitList(it)
+                    binding.rvList.layoutManager = LinearLayoutManager(context)
+                    binding.rvList.addItemDecoration(
+                        DividerItemDecoration(
+                            requireContext(),
+                            R.drawable.item_divider
+                        )
+                    )
+                    binding.rvList.adapter = object : GenericListAdapter<GitHubEntity>(
+                        R.layout.row_github_data,
+                        bind = { item, holder, itemCount ->
+                            with(holder.itemView) {
+                                this.findViewById<TextView>(R.id.tvName).text = item.name
+                                this.findViewById<TextView>(R.id.tvUrl).text = item.url
+                                this.findViewById<TextView>(R.id.tvOwner).text =
+                                    item.owner?.login
+                            }
+                            Log.d(TAG, item.name)
+                        },
+                        clickListener = { item, isLongClick -> toast(requireContext(), item.name) }
+                    ) {
+
+                    }.apply {
+                        submitList(data)
                     }
                 }
             })

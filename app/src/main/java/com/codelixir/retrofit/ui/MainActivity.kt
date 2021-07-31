@@ -1,27 +1,22 @@
 package com.codelixir.retrofit.ui
 
-import RomUtils
-import RomUtils.IGNORE_BATTERY_OPTIMIZATIONS_REQUEST_CODE
-import RomUtils.askIgnoreBatteryOptimization
-import RomUtils.askMiuiIgnoreBatteryOptimization
-import RomUtils.hasBatteryOptimization
+import com.codelixir.retrofit.util.RomUtils
+import com.codelixir.retrofit.util.RomUtils.askIgnoreBatteryOptimization
+import com.codelixir.retrofit.util.RomUtils.askMiuiIgnoreBatteryOptimization
+import com.codelixir.retrofit.util.RomUtils.hasBatteryOptimization
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.PersistableBundle
 import android.view.LayoutInflater
 import android.view.MenuItem
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.Observer
-import androidx.navigation.NavController
-import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
@@ -44,6 +39,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     override fun getToolbar(): Toolbar = binding.toolbar
     override fun getToolbarTitle(): TextView = binding.tvToolbarTitle
     override fun getNavController() = findNavController(R.id.nav_host_fragment)
+
+    override fun getProgressView(): View = binding.progressBar.root
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

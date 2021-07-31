@@ -1,3 +1,5 @@
+package com.codelixir.retrofit.util
+
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ComponentName
@@ -12,8 +14,6 @@ import android.provider.Settings
 import android.text.TextUtils
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat.startActivity
 import com.codelixir.retrofit.R
 import java.io.BufferedReader
 import java.io.IOException
@@ -21,7 +21,7 @@ import java.io.InputStreamReader
 
 
 object RomUtils {
-    private const val TAG = "RomUtils"
+    private const val TAG = "com.codelixir.retrofit.util.RomUtils"
     const val IGNORE_BATTERY_OPTIMIZATIONS_REQUEST_CODE = 101
 
     fun Context.hasBatteryOptimization(): Boolean {
@@ -56,9 +56,7 @@ object RomUtils {
             intent.action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
             intent.data = Uri.fromParts("package", packageName, null)
             return try {
-                startForResult?.let {
-                    it.launch(intent)
-                } ?: run {
+                startForResult?.launch(intent) ?: run {
                     startActivityForResult(intent, IGNORE_BATTERY_OPTIMIZATIONS_REQUEST_CODE)
                 }
                 true
@@ -75,9 +73,7 @@ object RomUtils {
             //                    "com.miui.powerkeeper.ui.HiddenAppsConfigActivity"));
             intent.putExtra("package_name", packageName)
             intent.putExtra("package_label", getString(R.string.app_name))
-            startForResult?.let {
-                it.launch(intent)
-            } ?: run {
+            startForResult?.launch(intent) ?: run {
                 startActivityForResult(intent, IGNORE_BATTERY_OPTIMIZATIONS_REQUEST_CODE)
             }
             true
@@ -100,7 +96,7 @@ object RomUtils {
         return null
     }
 
-    fun getSystemProperty(propName: String): String? {
+    private fun getSystemProperty(propName: String): String? {
         val line: String
         var input: BufferedReader? = null
         try {
@@ -131,39 +127,46 @@ object RomUtils {
         val manufacturer = Build.MANUFACTURER
         try {
             val intent = Intent()
-            if ("xiaomi".equals(manufacturer, ignoreCase = true)) {
-                intent.component = ComponentName(
-                    "com.miui.securitycenter",
-                    "com.miui.permcenter.autostart.AutoStartManagementActivity"
-                )
-            } else if ("oppo".equals(manufacturer, ignoreCase = true)) {
-                intent.component = ComponentName(
-                    "com.coloros.safecenter",
-                    "com.coloros.safecenter.permission.startup.StartupAppListActivity"
-                )
-            } else if ("vivo".equals(manufacturer, ignoreCase = true)) {
-                intent.component = ComponentName(
-                    "com.vivo.permissionmanager",
-                    "com.vivo.permissionmanager.activity.BgStartUpManagerActivity"
-                )
-            } else if ("Letv".equals(manufacturer, ignoreCase = true)) {
-                intent.component = ComponentName(
-                    "com.letv.android.letvsafe",
-                    "com.letv.android.letvsafe.AutobootManageActivity"
-                )
-            } else if ("Honor".equals(manufacturer, ignoreCase = true)) {
-                intent.component = ComponentName(
-                    "com.huawei.systemmanager",
-                    "com.huawei.systemmanager.optimize.process.ProtectActivity"
-                )
-            } else if ("meizu".equals(manufacturer, ignoreCase = true)) {
-                intent.setAction("com.meizu.safe.security.SHOW_APPSEC")
-                intent.addCategory(Intent.CATEGORY_DEFAULT)
-                intent.putExtra("packageName", packageName)
+            when {
+                "xiaomi".equals(manufacturer, ignoreCase = true) -> {
+                    intent.component = ComponentName(
+                        "com.miui.securitycenter",
+                        "com.miui.permcenter.autostart.AutoStartManagementActivity"
+                    )
+                }
+                "oppo".equals(manufacturer, ignoreCase = true) -> {
+                    intent.component = ComponentName(
+                        "com.coloros.safecenter",
+                        "com.coloros.safecenter.permission.startup.StartupAppListActivity"
+                    )
+                }
+                "vivo".equals(manufacturer, ignoreCase = true) -> {
+                    intent.component = ComponentName(
+                        "com.vivo.permissionmanager",
+                        "com.vivo.permissionmanager.activity.BgStartUpManagerActivity"
+                    )
+                }
+                "Letv".equals(manufacturer, ignoreCase = true) -> {
+                    intent.component = ComponentName(
+                        "com.letv.android.letvsafe",
+                        "com.letv.android.letvsafe.AutobootManageActivity"
+                    )
+                }
+                "Honor".equals(manufacturer, ignoreCase = true) -> {
+                    intent.component = ComponentName(
+                        "com.huawei.systemmanager",
+                        "com.huawei.systemmanager.optimize.process.ProtectActivity"
+                    )
+                }
+                "meizu".equals(manufacturer, ignoreCase = true) -> {
+                    intent.setAction("com.meizu.safe.security.SHOW_APPSEC")
+                    intent.addCategory(Intent.CATEGORY_DEFAULT)
+                    intent.putExtra("packageName", packageName)
+                }
             }
             val list: List<ResolveInfo> =
-                getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
-            if (list.size > 0) {
+                packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+            if (list.isNotEmpty()) {
                 startActivity(intent)
             }
         } catch (e: Exception) {

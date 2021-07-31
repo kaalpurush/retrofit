@@ -14,4 +14,8 @@ data class ServerEntity(
     @Expose
     val name: String,
 ) : BaseEntity() {
+
+    override fun toString(): String {
+        return name
+    }
 }

@@ -9,6 +9,10 @@ interface ServerService {
 
 class ServerMockService : ServerService {
     override suspend fun getList(): List<ServerEntity> {
-        return listOf(ServerEntity(1, "hmm"))
+        return listOf(
+            ServerEntity(1, "Mock1"),
+            ServerEntity(2, "Mock2"),
+            ServerEntity(3, "Mock3")
+        )
     }
 }

@@ -167,4 +167,8 @@
         app:layout_anchor="@id/bottom_bar"
         app:rippleColor="@android:color/holo_red_dark" />
 
+    <include
+        android:id="@+id/progressBar"
+        layout="@layout/view_progress" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

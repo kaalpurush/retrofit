@@ -6,17 +6,26 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.viewbinding.ViewBinding
+import com.codelixir.retrofit.data.BaseViewModel
 import com.codelixir.retrofit.databinding.FragmentHomeBinding
 import com.codelixir.retrofit.databinding.FragmentListBinding
 
 abstract class BaseFragment<T : ViewBinding> : Fragment(), NavigationHost {
 
+    protected val baseViewModel: BaseViewModel by activityViewModels()
+
     protected val TAG by lazy {
         this::class.java.simpleName
+    }
+
+    fun setProgress(progress: Boolean) {
+        baseViewModel.progress.postValue(progress)
     }
 
     protected lateinit var binding: T

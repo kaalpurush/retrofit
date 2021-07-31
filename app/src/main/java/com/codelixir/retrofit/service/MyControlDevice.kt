@@ -1,11 +1,13 @@
 package com.codelixir.retrofit.service
 
 import android.app.PendingIntent
+import android.os.Build
 import android.service.controls.Control
 import android.service.controls.DeviceTypes
 import android.service.controls.templates.RangeTemplate
+import androidx.annotation.RequiresApi
 
-
+@RequiresApi(Build.VERSION_CODES.R)
 data class MyControlDevice(
      val deviceId: String,
      val deviceName: String,

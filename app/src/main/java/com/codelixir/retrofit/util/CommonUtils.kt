@@ -4,7 +4,6 @@ import android.app.Activity
 import android.app.PendingIntent
 import android.content.*
 import android.content.Intent.EXTRA_CHOSEN_COMPONENT
-import android.content.pm.ComponentInfo
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -171,10 +170,10 @@ fun Activity.shareFile(file: File, shareTitle: String) {
         file
     )
 
-    val intent = ShareCompat.IntentBuilder.from(this)
+    val intent = ShareCompat.IntentBuilder(this)
         .setStream(uri)
         .setType(type)
-        .setText("Link: https://codelixir.com \nSharing: ${uri.toString()}")
+        .setText("Link: https://codelixir.com \nSharing: $uri")
         .setEmailTo(arrayOf("mail@codelixir.com"))
         .setSubject(shareTitle)
         .intent
@@ -247,10 +246,10 @@ suspend inline fun <reified T> runSuspended(crossinline task: () -> T): T {
 }
 
 fun String.formatDate(inputFormat: String, outputFormat: String): String? {
-    val inputFormatter = SimpleDateFormat(inputFormat)
-    val date: Date = inputFormatter.parse(this)
-    val outputFormatter = SimpleDateFormat(outputFormat)
-    return outputFormatter.format(date)
+    val inputFormatter = SimpleDateFormat(inputFormat, Locale.ENGLISH)
+    val date: Date? = inputFormatter.parse(this)
+    val outputFormatter = SimpleDateFormat(outputFormat, Locale.ENGLISH)
+    return date?.let { outputFormatter.format(date) }
 }
 
 fun TextView.setTextOrHide(text: String?) {

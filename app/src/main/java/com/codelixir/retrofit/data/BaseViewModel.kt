@@ -1,9 +1,11 @@
 package com.codelixir.retrofit.data
 
 import androidx.lifecycle.*
+import com.codelixir.retrofit.util.toast
 import kotlinx.coroutines.launch
 
-abstract class BaseViewModel : ViewModel() {
+open class BaseViewModel : ViewModel() {
+    val progress: MutableLiveData<Boolean> = MutableLiveData()
 
     protected fun <T> callApi(
         apiRequest: suspend () -> T?,
@@ -47,4 +49,15 @@ abstract class BaseViewModel : ViewModel() {
                 )
             }
         }
+
+    fun <T : Any> T.processAPI(showProgress: Boolean = true, showError: Boolean = true): T {
+        return this
+    }
+
+
+    fun processAPI(block: () -> Unit) {
+        toast(com.codelixir.retrofit.Application.context, "pre")
+        val response = block.invoke()
+        toast(com.codelixir.retrofit.Application.context, "post")
+    }
 }

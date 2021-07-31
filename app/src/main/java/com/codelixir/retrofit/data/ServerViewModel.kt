@@ -11,7 +11,8 @@ class ServerViewModel @Inject constructor(
 ) : BaseViewModel() {
     fun getList(): LiveData<Resource<List<ServerEntity>>> {
         return liveData {
-            emit(Resource.data(service.getList()))
+            emit(Resource.loading<List<ServerEntity>>(null))
+            emit(Resource.data(service.getList().processAPI()))
         }
     }
 }
