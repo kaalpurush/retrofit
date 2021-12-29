@@ -9,6 +9,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.codelixir.retrofit.R
@@ -18,6 +19,15 @@ import com.codelixir.retrofit.data.Resource
 import com.codelixir.retrofit.databinding.FragmentHomeBinding
 import com.codelixir.retrofit.util.show
 import com.codelixir.retrofit.util.toast
+import com.rabbitmq.client.Channel
+import com.rabbitmq.client.Connection
+import com.rabbitmq.client.ConnectionFactory
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.IOException
+import java.lang.RuntimeException
+import java.util.concurrent.TimeoutException
 
 class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     private val viewModel by viewModels<GitHubViewModel>()
@@ -70,6 +80,31 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 binding.textView1.text = dy.toString()
             }
         })
+
+        binding.btnRabbitMQ.setOnClickListener {
+            lifecycleScope.launch(Dispatchers.IO) {
+                val factory = ConnectionFactory()
+                try {
+                    factory.host = "192.168.0.140"
+                    factory.username = "guest"
+                    factory.password = "guest"
+                    val channel: Channel
+                    val connection: Connection = factory.newConnection()
+                    channel = connection.createChannel()
+                    channel.exchangeDeclare("logs", "fanout", false, false, null)
+                    val message = "Example3"
+                    channel.basicPublish("logs", "", null, message.toByteArray())
+                    println(" [x] Sent '$message'")
+                    channel.close()
+                    connection.close()
+                } catch (e: IOException) {
+                    println("Rabbitmq problem:"+ e.message)
+                } catch (e: TimeoutException) {
+                    println("Rabbitmq problem"+ e.message)
+                }
+            }
+
+        }
 
     }
 

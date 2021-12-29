@@ -69,7 +69,7 @@ class UploadFragment : BaseFragment<FragmentUploadBinding>() {
         }
     }
 
-    fun reqPermissionAndOpenDocuments() {
+    private fun reqPermissionAndOpenDocuments() {
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.READ_EXTERNAL_STORAGE
