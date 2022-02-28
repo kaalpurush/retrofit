@@ -3,13 +3,13 @@ package com.codelixir.retrofit.ui
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.annotation.IdRes
+import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
 abstract class GenericListAdapter<T : Any>(
-    @IdRes val layoutId: Int,
+    @LayoutRes val layoutId: Int,
     private inline val bind: (item: T, holder: BaseViewHolder, itemCount: Int) -> Unit,
     private inline val clickListener: ((item: T, isLongClick: Boolean) -> Unit)? = null
 ) : ListAdapter<T, BaseViewHolder>(BaseItemCallback<T>()) {

@@ -101,7 +101,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         checkBatteryOptimization()
     }
 
-    fun checkBatteryOptimization() {
+    private fun checkBatteryOptimization() {
         if (hasBatteryOptimization()) {
             val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                 toast(this, "Optimization: " + hasBatteryOptimization().toString())
@@ -118,7 +118,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
     @SuppressLint("RestrictedApi")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return if (item.itemId == android.R.id.home && getNavController().backStack.size < 1) {
+        return if (item.itemId == android.R.id.home && getNavController().backQueue.size < 1) {
             finish()
             true
         } else super.onOptionsItemSelected(item)
@@ -127,13 +127,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     private fun refreshData() {
         Toast.makeText(this, "Refreshing...", Toast.LENGTH_SHORT).show()
         viewModel.getSharedRepositories()
-            .observe(this, Observer { out ->
+            .observe(this) { out ->
                 if (out.status == Resource.Status.SUCCESS) {
                     out.data?.let {
                         Toast.makeText(this, "Total items: ${it.size}", Toast.LENGTH_SHORT).show()
                     }
                 }
-            })
+            }
     }
 
 /*    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

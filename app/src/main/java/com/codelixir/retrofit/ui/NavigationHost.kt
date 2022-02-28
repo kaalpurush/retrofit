@@ -24,13 +24,13 @@ interface NavigationHost {
     }
 
     fun navigateToStart() {
-        getNavController().navigate(getNavController().graph.startDestination)
+        getNavController().navigate(getNavController().graph.startDestinationId)
     }
 
     fun cleanNavigateTo(directions: NavDirections) {
         getNavController().navigate(
             directions,
-            getNavController().graph.startDestination.let {
+            getNavController().graph.startDestinationId.let {
                 NavOptions.Builder().setPopUpTo(it, true).build()
             }
         )

@@ -17,16 +17,13 @@ import com.codelixir.retrofit.data.GitHubEntity
 import com.codelixir.retrofit.data.GitHubViewModel
 import com.codelixir.retrofit.data.Resource
 import com.codelixir.retrofit.databinding.FragmentHomeBinding
-import com.codelixir.retrofit.util.show
 import com.codelixir.retrofit.util.toast
 import com.rabbitmq.client.Channel
 import com.rabbitmq.client.Connection
 import com.rabbitmq.client.ConnectionFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.IOException
-import java.lang.RuntimeException
 import java.util.concurrent.TimeoutException
 
 class HomeFragment : BaseFragment<FragmentHomeBinding>() {
@@ -110,7 +107,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     private fun refreshData() {
         viewModel.getRepositoriesWithFallback()
-            .observe(viewLifecycleOwner, { out ->
+            .observe(viewLifecycleOwner) { out ->
                 baseViewModel.progress.postValue(out.status == Resource.Status.LOADING)
 
                 if (out.status == Resource.Status.SUCCESS) {
@@ -142,7 +139,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                         submitList(data)
                     }
                 }
-            })
+            }
     }
 
 }

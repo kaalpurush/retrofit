@@ -17,7 +17,6 @@ import androidx.navigation.NavDestination
 import androidx.viewbinding.ViewBinding
 import com.codelixir.retrofit.R
 import com.codelixir.retrofit.data.BaseViewModel
-import com.codelixir.retrofit.data.GitHubViewModel
 
 abstract class BaseActivity<T : ViewBinding> : AppCompatActivity(), NavigationHost {
 
