@@ -1,8 +1,6 @@
 package com.codelixir.retrofit.data
 
 import com.codelixir.retrofit.Application
-import com.facebook.stetho.okhttp3.StethoInterceptor
-import com.google.gson.GsonBuilder
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -16,7 +14,6 @@ object RetrofitClient {
 
         val okHttpClient = OkHttpClient.Builder().run {
             cache(cache)
-            addNetworkInterceptor(StethoInterceptor())
             build()
         }
 

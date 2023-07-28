@@ -23,6 +23,7 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.LayoutRes
+import androidx.annotation.RequiresApi
 import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
 import androidx.core.text.HtmlCompat
@@ -157,6 +158,7 @@ suspend fun View.getBitmapAsImageFile(): File {
     )
 }
 
+@RequiresApi(Build.VERSION_CODES.LOLLIPOP_MR1)
 fun Activity.shareFile(file: File, shareTitle: String) {
     val type = try {
         MimeTypeMap.getSingleton().getMimeTypeFromExtension(file.extension)
@@ -214,7 +216,7 @@ fun Activity.shareFile(file: File, shareTitle: String) {
     val pi = PendingIntent.getBroadcast(
         this, 0,
         Intent("SHARE_CHOSEN_COMPONENT"),
-        PendingIntent.FLAG_UPDATE_CURRENT
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
     )
 
     this.registerReceiver(br, IntentFilter("SHARE_CHOSEN_COMPONENT"))

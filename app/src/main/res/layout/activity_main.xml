@@ -8,13 +8,6 @@
     android:gravity="center"
     android:orientation="vertical">
 
-    <ImageView
-        android:layout_width="120dp"
-        android:layout_height="130dp"
-        android:layout_gravity="end"
-        android:src="@android:drawable/gallery_thumb"
-        app:tint="@color/colorToolbarTitle" />
-
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
